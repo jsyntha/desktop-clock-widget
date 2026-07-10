@@ -427,3 +427,7 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Project fonts and settings
+Fonts/*.ttf
+clockSettings.json
