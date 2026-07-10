@@ -1,3 +1,4 @@
+using System.Configuration;
 using System.Drawing.Text;
 using System.Text.Json;
 
@@ -12,9 +13,13 @@ namespace Clock
         private PrivateFontCollection fonts = new();
         private Font timeFont;
         private Font dateFont;
+        public string FontName { get; private set; } = "";
+        public string FontPath { get; private set; } = "";
 
+        private readonly Dictionary<string, FontFamily> fontsStored = new();
         private string settingsFilePath = Path.Combine(Application.StartupPath, "clockSettings.json");
 
+        private bool settingsOpen = false;
         public frmClock()
         {
             InitializeComponent();
@@ -24,21 +29,65 @@ namespace Clock
 
         private void SetupFonts()
         {
-            fonts.AddFontFile(
-                Path.Combine(
-                    Application.StartupPath,
-                    "Fonts",
-                    "Minecraftia-Regular.ttf"
-                )
-            );
+            string fontsFolder = Path.Combine(Application.StartupPath, "Fonts");
+            FontPath = fontsFolder;
 
-            timeFont = new Font(fonts.Families[0], 84, FontStyle.Regular);
-            dateFont = new Font(fonts.Families[0], 32, FontStyle.Regular);
+            if (!Directory.Exists(fontsFolder))
+            {
+                MessageBox.Show("The Fonts folder was not found.");
+                return;
+            }
 
-            lblDigitalTime.Font = timeFont;
-            lblDate.Font = dateFont;
+            string[] fontsFoundList = Directory.GetFiles(fontsFolder, "*.ttf");
 
-            lblDate.Text = DateTime.Now.ToString("dd/MM/yy");
+            if (fontsFoundList.Length == 0)
+            {
+                MessageBox.Show("No fonts found in the Fonts folder.");
+                return;
+            }
+
+            try
+            {
+                foreach (string fontPath in fontsFoundList)
+                {
+                    int oldFontCount = fonts.Families.Length;
+                    fonts.AddFontFile(fontPath);
+
+                    if (fonts.Families.Length <= oldFontCount)
+                    {
+                        continue;
+                    }
+
+                    FontFamily loadedFont = fonts.Families[fonts.Families.Length - 1];
+                    string fontName = Path.GetFileNameWithoutExtension(fontPath);
+
+                    if (!fontsStored.ContainsKey(fontName))
+                    {
+                        fontsStored.Add(fontName, loadedFont);
+                        FontName = fontName;
+                    }
+                }
+
+                if (fontsStored.Count == 0)
+                {
+                    MessageBox.Show("No fonts could be loaded.");
+                    return;
+                }
+
+                FontFamily selectedFont = fontsStored.Values.First();
+
+                timeFont = new Font(selectedFont, 84, FontStyle.Regular);
+                dateFont = new Font(selectedFont, 32, FontStyle.Regular);
+
+                lblDigitalTime.Font = timeFont;
+                lblDate.Font = dateFont;
+
+                lblDate.Text = DateTime.Now.ToString("dd/MM/yy");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -110,6 +159,26 @@ namespace Clock
             SaveSettings();
             notifyIcon1?.Visible = false;
             base.OnFormClosing(e);
+        }
+
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(settingsOpen)
+            {
+                return;
+            } settingsOpen = true;
+
+            try
+            {
+                using (frmSettings settingsForm = new frmSettings())
+                {
+                    settingsForm.ShowDialog(this);
+                }
+            }
+            finally
+            {
+                settingsOpen = false;
+            }
         }
     }
 }
