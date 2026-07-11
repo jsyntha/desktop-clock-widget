@@ -39,9 +39,9 @@ The font file will then be copied alongside the application when built.
 - [ ] Improve desktop widget behaviour
 
 ### User Experience
-- [ ] Improved system tray controls
-- [ ] Settings menu
-- [ ] Better configuration handling
+- [ ] Improved system tray controls <!-- In Progress -->
+- [ ] Settings menu <!-- In Progress -->
+- [ ] Better configuration handling <!-- In Progress -->
 - [ ] Additional display options
 
 ## Built With
