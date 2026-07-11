@@ -1,6 +1,7 @@
 using System.Configuration;
 using System.Drawing.Text;
 using System.Text.Json;
+using System.IO;
 
 namespace Clock
 {
@@ -11,10 +12,12 @@ namespace Clock
         private Point formPosition;
 
         private PrivateFontCollection fonts = new();
+        public FontFamily? selectedFont { get; private set; }
         private Font timeFont;
         private Font dateFont;
         public string FontName { get; private set; } = "";
         public string FontPath { get; private set; } = "";
+        public string FontFolder { get; private set; } = "";
 
         private readonly Dictionary<string, FontFamily> fontsStored = new();
         private string settingsFilePath = Path.Combine(Application.StartupPath, "clockSettings.json");
@@ -30,7 +33,7 @@ namespace Clock
         private void SetupFonts()
         {
             string fontsFolder = Path.Combine(Application.StartupPath, "Fonts");
-            FontPath = fontsFolder;
+            FontFolder = fontsFolder;
 
             if (!Directory.Exists(fontsFolder))
             {
@@ -74,7 +77,7 @@ namespace Clock
                     return;
                 }
 
-                FontFamily selectedFont = fontsStored.Values.First();
+                selectedFont = fontsStored.Values.First();
 
                 timeFont = new Font(selectedFont, 84, FontStyle.Regular);
                 dateFont = new Font(selectedFont, 32, FontStyle.Regular);
@@ -157,7 +160,13 @@ namespace Clock
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             SaveSettings();
+
+            timeFont?.Dispose();
+            dateFont?.Dispose();
+            fonts.Dispose();
+
             notifyIcon1?.Visible = false;
+
             base.OnFormClosing(e);
         }
 
@@ -170,7 +179,7 @@ namespace Clock
 
             try
             {
-                using (frmSettings settingsForm = new frmSettings())
+                using (frmSettings settingsForm = new frmSettings(this))
                 {
                     settingsForm.ShowDialog(this);
                 }
@@ -179,6 +188,32 @@ namespace Clock
             {
                 settingsOpen = false;
             }
+        }
+        public void LoadFont(string path)
+        {
+            string fontName = Path.GetFileNameWithoutExtension(path);
+
+            if (!fontsStored.TryGetValue(fontName, out FontFamily font))
+            {
+                fonts.AddFontFile(path);
+
+                font = fonts.Families.Last();
+
+                fontsStored.Add(fontName, font);
+            }
+
+            selectedFont = font;
+            FontPath = path;
+            FontName = fontName;
+
+            timeFont?.Dispose();
+            dateFont?.Dispose();
+
+            timeFont = new Font(font, 84);
+            dateFont = new Font(font, 32);
+
+            lblDigitalTime.Font = timeFont;
+            lblDate.Font = dateFont;
         }
     }
 }

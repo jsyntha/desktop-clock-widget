@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Clock": {
+      "commandName": "Project",
+      "workingDirectory": "D:\\Joshua\\Coding\\Projects\\Github Clones\\DesktopClockWidget\\Clock\\bin"
+    }
+  }
+}
