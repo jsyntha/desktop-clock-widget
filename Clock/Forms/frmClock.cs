@@ -3,15 +3,13 @@ using System.Drawing.Text;
 using System.Text.Json;
 using System.IO;
 using Clock.Models;
+using Clock.Helper;
 
 namespace Clock
 {
     public partial class frmClock : Form
     {
-        private bool isDragging = false;
-        private Point mouseDownPosition;
-        private Point formPosition;
-
+        private readonly WindowDragHelper _dragHelper;
         private PrivateFontCollection fonts = new();
         public FontFamily? selectedFont { get; private set; }
         public string FontName { get; private set; } = "";
@@ -28,6 +26,7 @@ namespace Clock
         public frmClock()
         {
             InitializeComponent();
+            _dragHelper = new WindowDragHelper(this);
             SetupFonts();
             LoadSettings();
         }
@@ -104,27 +103,17 @@ namespace Clock
 
         private void pnlClock_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button != MouseButtons.Left)
-                return;
-
-            isDragging = true;
-
-            mouseDownPosition = Cursor.Position;
-            formPosition = Location;
+            _dragHelper.StartDrag(e);
         }
 
         private void pnlClock_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!isDragging)
-                return;
-
-            Point difference = Cursor.Position - (Size)mouseDownPosition;
-            Location = formPosition + (Size)difference;
+            _dragHelper.MoveDrag();
         }
 
         private void pnlClock_MouseUp(object sender, MouseEventArgs e)
         {
-            isDragging = false;
+            _dragHelper.EndDrag(e);
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
