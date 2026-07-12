@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Fonts\Minecraftia-Regular.ttf" />
+    <None Remove="Assets\Fonts\Minecraftia-Regular.ttf" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Fonts\" />
+    <Folder Include="Assets\Fonts\" />
   </ItemGroup>
 
   <ItemGroup>

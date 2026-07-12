@@ -2,6 +2,7 @@ using System.Configuration;
 using System.Drawing.Text;
 using System.Text.Json;
 using System.IO;
+using Clock.Models;
 
 namespace Clock
 {
@@ -13,11 +14,12 @@ namespace Clock
 
         private PrivateFontCollection fonts = new();
         public FontFamily? selectedFont { get; private set; }
-        private Font timeFont;
-        private Font dateFont;
         public string FontName { get; private set; } = "";
         public string FontPath { get; private set; } = "";
         public string FontFolder { get; private set; } = "";
+
+        private Font timeFont;
+        private Font dateFont;
 
         private readonly Dictionary<string, FontFamily> fontsStored = new();
         private string settingsFilePath = Path.Combine(Application.StartupPath, "clockSettings.json");
