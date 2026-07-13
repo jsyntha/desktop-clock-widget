@@ -9,12 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\Fonts\Minecraftia-Regular.ttf" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Assets\Fonts\" />
-    <Folder Include="Services\" />
+    <Content Include="Assets\Fonts\*.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>Fonts\%(Filename)%(Extension)</TargetPath>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

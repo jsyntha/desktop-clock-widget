@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using Clock.Services;
 using System.Diagnostics;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace Clock
 {
     public partial class frmSettings : Form
     {
-        private readonly frmClock clockForm;
+        private readonly FontService _fontService;
 
-        public frmSettings(frmClock clockForm)
+        public frmSettings(FontService fontService)
         {
             InitializeComponent();
+            _fontService = fontService;
 
             lblTypographyExampleSentence.TextAlign = ContentAlignment.MiddleCenter;
             lblTypographyExampleChars.TextAlign = ContentAlignment.MiddleCenter;
@@ -24,11 +18,9 @@ namespace Clock
             lblTypographyExampleSentence.AutoSize = false;
             lblTypographyExampleChars.AutoSize = false;
 
-            this.clockForm = clockForm;
-            txtActiveFont.Text = this.clockForm.FontName;
-            //txtActivePath.Text = this.clockForm.FontPath;
-            txtActivePath.Text = ShortenPath(clockForm.FontPath, 64);
-            FontFamily font = clockForm.selectedFont ?? FontFamily.GenericSansSerif;
+            txtActiveFont.Text = _fontService.FontName;
+            txtActivePath.Text = ShortenPath(_fontService.FontPath, 64);
+            FontFamily? font = _fontService.SelectedFont;
 
             ApplyPreviewFont(lblTypographyExampleSentence, font);
             ApplyPreviewFont(lblTypographyExampleChars, font);
@@ -41,21 +33,21 @@ namespace Clock
                 openFileDialog.Filter = "TrueType Fonts (*.ttf)|*.ttf";
                 openFileDialog.Title = "Select a font file";
 
-                if (!string.IsNullOrEmpty(clockForm.FontFolder))
+                if (!string.IsNullOrEmpty(_fontService.FontFolder))
                 {
-                    openFileDialog.InitialDirectory = clockForm.FontFolder;
+                    openFileDialog.InitialDirectory = _fontService.FontFolder;
                 }
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    clockForm.LoadFont(openFileDialog.FileName);
+                    _fontService.SelectFont(openFileDialog.FileName);
 
-                    txtActiveFont.Text = clockForm.FontName;
-                    txtActivePath.Text = ShortenPath(clockForm.FontPath, 64);
-                    txtExampleFont.Text = ShortenPath(clockForm.FontPath, 64);
+                    txtActiveFont.Text = _fontService.FontName;
+                    txtActivePath.Text = ShortenPath(_fontService.FontPath, 64);
+                    txtExampleFont.Text = ShortenPath(_fontService.FontPath, 64);
 
-                    ApplyPreviewFont(lblTypographyExampleSentence, clockForm.selectedFont ?? FontFamily.GenericSansSerif);
-                    ApplyPreviewFont(lblTypographyExampleChars, clockForm.selectedFont ?? FontFamily.GenericSansSerif);
+                    ApplyPreviewFont(lblTypographyExampleSentence, _fontService.SelectedFont ?? FontFamily.GenericSansSerif);
+                    ApplyPreviewFont(lblTypographyExampleChars, _fontService.SelectedFont ?? FontFamily.GenericSansSerif);
                 }
             }
         }
@@ -64,7 +56,7 @@ namespace Clock
         {
             Process.Start(new ProcessStartInfo
             {
-                FileName = clockForm.FontFolder,
+                FileName = _fontService.FontFolder,
                 UseShellExecute = true
             });
         }
@@ -75,14 +67,15 @@ namespace Clock
             return "..." + path.Substring(path.Length - maxLength);
         }
 
-        private void ApplyPreviewFont(Control control, FontFamily fontFamily)
+        private void ApplyPreviewFont(Control control, FontFamily? fontFamily)
         {
+            FontFamily previewFontFamily = fontFamily ?? SystemFonts.DefaultFont.FontFamily;
             float size = 48f;
             Font testFont;
 
             while (size > 1)
             {
-                testFont = new Font(fontFamily, size, control.Font.Style);
+                testFont = new Font(previewFontFamily, size, control.Font.Style);
 
                 Size textSize = TextRenderer.MeasureText(control.Text, testFont);
 
@@ -96,7 +89,7 @@ namespace Clock
                 size--;
             }
 
-            control.Font = new Font(fontFamily, 1f, control.Font.Style);
+            control.Font = new Font(previewFontFamily, 1f, control.Font.Style);
         }
     }
 }

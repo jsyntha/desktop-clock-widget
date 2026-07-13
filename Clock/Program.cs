@@ -1,3 +1,5 @@
+using Clock.Services;
+
 namespace Clock
 {
     internal static class Program
@@ -11,7 +13,8 @@ namespace Clock
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new frmClock());
+            FontService fontService = new FontService();
+            Application.Run(new frmClock(fontService));
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Clock.Helper
+namespace Clock.Helpers
 {
     internal class WindowDragHelper
     {
