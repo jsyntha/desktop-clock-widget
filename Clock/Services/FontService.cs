@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualBasic;
+﻿using Clock.Helpers;
+using Microsoft.VisualBasic;
 using System.Drawing.Text;
 
 namespace Clock.Services
@@ -12,6 +13,13 @@ namespace Clock.Services
         private Color _fontColor = Color.Black;
         //private Color _previousFontColor;
 
+        /*
+        public FontService()
+        {
+            userFontFolder = Path.Combine(_appDataRoot, "Fonts");
+            bundledFontFolder = Path.Combine(Application.StartupPath, "Fonts");
+        }*/
+
         public FontFamily? SelectedFont { get; private set; }
         public string FontName { get; private set; } = "";
         public string FontPath { get; private set; } = "";
@@ -24,17 +32,42 @@ namespace Clock.Services
 
         public void LoadFonts()
         {
-            FontFolder = Path.Combine(Application.StartupPath, "Fonts");
-            if (!Directory.Exists(FontFolder))
+            FontFolder = AppPathHelper.userFontFolder;
+
+            try
+            {
+                Directory.CreateDirectory(FontFolder);
+            }
+            catch
             {
                 UseFallbackFont();
                 return;
             }
 
-            string[] fontsFoundList = Directory.GetFiles(FontFolder, "*.ttf");
-            if (fontsFoundList.Length <= 0)
+            LoadFontsFromFolder(AppPathHelper.bundledFontFolder);
+            LoadFontsFromFolder(FontFolder);
+
+            if (_fontsStored.Count == 0)
             {
                 UseFallbackFont();
+                return;
+            }
+
+            var firstFont = _fontsStored.First();
+            ApplySelectedFont(firstFont.Value, firstFont.Key, FontPath);
+            FontChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void LoadFontsFromFolder(string folderPath)
+        {
+            if (!Directory.Exists(folderPath))
+            {
+                return;
+            }
+
+            string[] fontsFoundList = Directory.GetFiles(folderPath, "*.ttf");
+            if (fontsFoundList.Length <= 0)
+            {
                 return;
             }
 
@@ -63,20 +96,9 @@ namespace Clock.Services
                         }
                     }
                 }
-
-                if (_fontsStored.Count == 0)
-                {
-                    UseFallbackFont();
-                    return;
-                }
-
-                var firstFont = _fontsStored.First();
-                ApplySelectedFont(firstFont.Value, firstFont.Key, FontPath);
-                FontChanged?.Invoke(this, EventArgs.Empty);
             }
             catch
             {
-                UseFallbackFont();
             }
         }
 

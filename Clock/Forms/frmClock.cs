@@ -10,12 +10,14 @@ namespace Clock
         private readonly WindowDragHelper _dragHelper;
         private readonly FontService _fontService;
 
-        private string settingsFilePath = Path.Combine(Application.StartupPath, "clockSettings.json");
+        private readonly string settingsFilePath;
 
         private bool settingsOpen = false;
         public frmClock(FontService fontService)
         {
             InitializeComponent();
+
+            settingsFilePath = Path.Combine(AppPathHelper.userFontFolder, "clockSettings.json");
 
             _fontService = fontService;
             _dragHelper = new WindowDragHelper(this);
@@ -77,6 +79,8 @@ namespace Clock
 
         private void SaveSettings()
         {
+            Directory.CreateDirectory(AppPathHelper.userFontFolder);
+
             ClockSettings settings = new ClockSettings
             {
                 X = Location.X,

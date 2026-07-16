@@ -58,11 +58,18 @@ namespace Clock
 
         private void OpenFontFolder(object sender, EventArgs e)
         {
-            Process.Start(new ProcessStartInfo
+            if (Directory.Exists(_fontService.FontFolder))
             {
-                FileName = _fontService.FontFolder,
-                UseShellExecute = true
-            });
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = _fontService.FontFolder,
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                MessageBox.Show("The Fonts folder does not exist and could not be created possibly due to lack of permissions.", "Folder Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private string ShortenPath(string path, int maxLength)
