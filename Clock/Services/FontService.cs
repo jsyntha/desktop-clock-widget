@@ -32,7 +32,7 @@ namespace Clock.Services
 
         public void LoadFonts()
         {
-            FontFolder = AppPathHelper.userFontFolder;
+            FontFolder = AppPaths.UserFontFolder;
 
             try
             {
@@ -44,7 +44,7 @@ namespace Clock.Services
                 return;
             }
 
-            LoadFontsFromFolder(AppPathHelper.bundledFontFolder);
+            LoadFontsFromFolder(AppPaths.BundledFontFolder);
             LoadFontsFromFolder(FontFolder);
 
             if (_fontsStored.Count == 0)

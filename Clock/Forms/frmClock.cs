@@ -9,22 +9,18 @@ namespace Clock
     {
         private readonly WindowDragHelper _dragHelper;
         private readonly FontService _fontService;
-
-        private readonly string settingsFilePath;
+        private readonly SettingsService _settingsService;
 
         private bool settingsOpen = false;
         public frmClock(FontService fontService)
         {
             InitializeComponent();
-
-            settingsFilePath = Path.Combine(AppPathHelper.userFontFolder, "clockSettings.json");
-
-            _fontService = fontService;
             _dragHelper = new WindowDragHelper(this);
+            _fontService = fontService;
+            _settingsService = new SettingsService(_fontService);
             _fontService.FontChanged += FontService_FontChanged;
             _fontService.LoadFonts();
-
-            LoadSettings();
+            Location = _settingsService.LoadSettings(Location);
 
             lblDigitalTime.Font = _fontService.TimeFont;
             lblDate.Font = _fontService.DateFont;
@@ -58,43 +54,9 @@ namespace Clock
             Application.Exit();
         }
 
-        private void LoadSettings()
-        {
-            if (!File.Exists(settingsFilePath)) return;
-
-            string json = File.ReadAllText(settingsFilePath);
-
-            ClockSettings? settings = JsonSerializer.Deserialize<ClockSettings>(json);
-
-            if (settings == null)
-                return;
-
-            Location = new Point(settings.X, settings.Y);
-
-            if (settings.FontColorArgb.HasValue)
-            {
-                _fontService.ApplyFontColour(Color.FromArgb(settings.FontColorArgb.Value));
-            }
-        }
-
-        private void SaveSettings()
-        {
-            Directory.CreateDirectory(AppPathHelper.userFontFolder);
-
-            ClockSettings settings = new ClockSettings
-            {
-                X = Location.X,
-                Y = Location.Y,
-                FontColorArgb = _fontService.FontColor.ToArgb()
-            };
-
-            string json = JsonSerializer.Serialize(settings);
-            File.WriteAllText(settingsFilePath, json);
-        }
-
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            SaveSettings();
+            _settingsService.SaveSettings(Location);
             _fontService.FontChanged -= FontService_FontChanged;
             _fontService.Dispose();
             notifyIcon1?.Visible = false;

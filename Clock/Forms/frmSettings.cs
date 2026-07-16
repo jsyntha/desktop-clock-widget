@@ -42,7 +42,7 @@ namespace Clock
                     openFileDialog.InitialDirectory = _fontService.FontFolder;
                 }
 
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                if (openFileDialog.ShowDialog(this) == DialogResult.OK)
                 {
                     _fontService.SelectFont(openFileDialog.FileName);
 
@@ -112,7 +112,7 @@ namespace Clock
             dialog.AnyColor = true;
             dialog.FullOpen = true;
 
-            if (dialog.ShowDialog() == DialogResult.OK)
+            if (dialog.ShowDialog(this) == DialogResult.OK)
             {
                 _previewFontColor = dialog.Color;
                 ApplyPreviewFont(lblTypographyExampleSentence, _fontService.SelectedFont ?? FontFamily.GenericSansSerif, _previewFontColor);
