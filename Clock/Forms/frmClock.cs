@@ -19,7 +19,6 @@ namespace Clock
 
             _fontService = fontService;
             _dragHelper = new WindowDragHelper(this);
-
             _fontService.FontChanged += FontService_FontChanged;
             _fontService.LoadFonts();
 
@@ -69,6 +68,11 @@ namespace Clock
                 return;
 
             Location = new Point(settings.X, settings.Y);
+
+            if (settings.FontColorArgb.HasValue)
+            {
+                _fontService.ApplyFontColour(Color.FromArgb(settings.FontColorArgb.Value));
+            }
         }
 
         private void SaveSettings()
@@ -76,7 +80,8 @@ namespace Clock
             ClockSettings settings = new ClockSettings
             {
                 X = Location.X,
-                Y = Location.Y
+                Y = Location.Y,
+                FontColorArgb = _fontService.FontColor.ToArgb()
             };
 
             string json = JsonSerializer.Serialize(settings);
@@ -117,6 +122,8 @@ namespace Clock
         {
             lblDigitalTime.Font = _fontService.TimeFont;
             lblDate.Font = _fontService.DateFont;
+            lblDigitalTime.ForeColor = _fontService.FontColor;
+            lblDate.ForeColor = _fontService.FontColor;
         }
     }
 }

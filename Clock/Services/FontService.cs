@@ -1,4 +1,5 @@
-﻿using System.Drawing.Text;
+﻿using Microsoft.VisualBasic;
+using System.Drawing.Text;
 
 namespace Clock.Services
 {
@@ -8,12 +9,17 @@ namespace Clock.Services
         private readonly Dictionary<string, FontFamily> _fontsStored = new();
         private Font? _timeFont;
         private Font? _dateFont;
+        private Color _fontColor = Color.Black;
+        //private Color _previousFontColor;
+
         public FontFamily? SelectedFont { get; private set; }
         public string FontName { get; private set; } = "";
         public string FontPath { get; private set; } = "";
         public string FontFolder { get; private set; } = "";
         public Font? TimeFont => _timeFont;
         public Font? DateFont => _dateFont;
+        public Color FontColor => _fontColor;
+        //public Color PreviouisFontColor => _previousFontColor;
         public event EventHandler? FontChanged;
 
         public void LoadFonts()
@@ -78,7 +84,7 @@ namespace Clock.Services
         {
             string fontName = Path.GetFileNameWithoutExtension(path);
 
-            if (!_fontsStored.TryGetValue(fontName, out FontFamily font))
+            if (!_fontsStored.TryGetValue(fontName, out FontFamily? font))
             {
                 _fonts.AddFontFile(path);
 
@@ -88,6 +94,12 @@ namespace Clock.Services
             }
 
             ApplySelectedFont(font, fontName, path);
+            FontChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void ApplyFontColour(Color color)
+        {
+            _fontColor = color;
             FontChanged?.Invoke(this, EventArgs.Empty);
         }
 

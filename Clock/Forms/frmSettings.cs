@@ -6,11 +6,15 @@ namespace Clock
     public partial class frmSettings : Form
     {
         private readonly FontService _fontService;
+        private Color _previewFontColor;
+        private Color _previousFontColor;
 
         public frmSettings(FontService fontService)
         {
             InitializeComponent();
             _fontService = fontService;
+            _previousFontColor = _fontService.FontColor;
+            _previewFontColor = _previousFontColor;
 
             lblTypographyExampleSentence.TextAlign = ContentAlignment.MiddleCenter;
             lblTypographyExampleChars.TextAlign = ContentAlignment.MiddleCenter;
@@ -22,13 +26,13 @@ namespace Clock
             txtActivePath.Text = ShortenPath(_fontService.FontPath, 64);
             FontFamily? font = _fontService.SelectedFont;
 
-            ApplyPreviewFont(lblTypographyExampleSentence, font);
-            ApplyPreviewFont(lblTypographyExampleChars, font);
+            ApplyPreviewFont(lblTypographyExampleSentence, font, _fontService.FontColor);
+            ApplyPreviewFont(lblTypographyExampleChars, font, _fontService.FontColor);
         }
 
         private void btnBrowse_Click(object sender, EventArgs e)
         {
-            using(OpenFileDialog openFileDialog = new OpenFileDialog())
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
                 openFileDialog.Filter = "TrueType Fonts (*.ttf)|*.ttf";
                 openFileDialog.Title = "Select a font file";
@@ -46,8 +50,8 @@ namespace Clock
                     txtActivePath.Text = ShortenPath(_fontService.FontPath, 64);
                     txtExampleFont.Text = ShortenPath(_fontService.FontPath, 64);
 
-                    ApplyPreviewFont(lblTypographyExampleSentence, _fontService.SelectedFont ?? FontFamily.GenericSansSerif);
-                    ApplyPreviewFont(lblTypographyExampleChars, _fontService.SelectedFont ?? FontFamily.GenericSansSerif);
+                    ApplyPreviewFont(lblTypographyExampleSentence, _fontService.SelectedFont ?? FontFamily.GenericSansSerif, _fontService.FontColor);
+                    ApplyPreviewFont(lblTypographyExampleChars, _fontService.SelectedFont ?? FontFamily.GenericSansSerif, _fontService.FontColor);
                 }
             }
         }
@@ -67,11 +71,13 @@ namespace Clock
             return "..." + path.Substring(path.Length - maxLength);
         }
 
-        private void ApplyPreviewFont(Control control, FontFamily? fontFamily)
+        private void ApplyPreviewFont(Control control, FontFamily? fontFamily, Color fontColor)
         {
             FontFamily previewFontFamily = fontFamily ?? SystemFonts.DefaultFont.FontFamily;
             float size = 48f;
             Font testFont;
+
+            control.ForeColor = fontColor;
 
             while (size > 1)
             {
@@ -90,6 +96,39 @@ namespace Clock
             }
 
             control.Font = new Font(previewFontFamily, 1f, control.Font.Style);
+        }
+
+        private void btnChangeFontColour_Click(object sender, EventArgs e)
+        {
+            using ColorDialog dialog = new();
+            dialog.Color = _previewFontColor;
+            dialog.AnyColor = true;
+            dialog.FullOpen = true;
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                _previewFontColor = dialog.Color;
+                ApplyPreviewFont(lblTypographyExampleSentence, _fontService.SelectedFont ?? FontFamily.GenericSansSerif, _previewFontColor);
+                ApplyPreviewFont(lblTypographyExampleChars, _fontService.SelectedFont ?? FontFamily.GenericSansSerif, _previewFontColor);
+            }
+        }
+
+        private void btnApplySettings_Click(object sender, EventArgs e)
+        {
+            _fontService.ApplyFontColour(_previewFontColor);
+            _previousFontColor = _previewFontColor;
+        }
+
+        private void btnCancelSettings_Click(object sender, EventArgs e)
+        {
+            if(_previewFontColor == _previousFontColor)
+            {
+                MessageBox.Show("No changes to cancel.");
+                return;
+            }
+            _previewFontColor = _previousFontColor;
+            ApplyPreviewFont(lblTypographyExampleSentence, _fontService.SelectedFont ?? FontFamily.GenericSansSerif, _previewFontColor);
+            ApplyPreviewFont(lblTypographyExampleChars, _fontService.SelectedFont ?? FontFamily.GenericSansSerif, _previewFontColor);
         }
     }
 }
