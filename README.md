@@ -16,13 +16,9 @@ PixelClock supports custom .ttf fonts.
 
 To use your own font:
 - Add your .ttf font file to:
-Clock/Fonts/
-- Ensure the file name matches the font being loaded in the application:
-- Set the file properties in Visual Studio:
-Build Action: Content
-Copy to Output Directory: Copy if newer
+AppData/Local/Fonts/
+- The font doesn't have to be installed in Windows.
 
-The font file will then be copied alongside the application when built.
 > Note: Ensure any fonts added follow their own license requriements.
 
 ## Roadmap
