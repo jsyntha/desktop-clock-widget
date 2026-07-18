@@ -16,5 +16,10 @@ namespace Clock.Helpers
             Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
                 "Fonts");
+
+        public static readonly string AppDataFolder =
+            Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "DesktopClockWidget");
     }
 }

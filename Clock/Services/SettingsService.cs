@@ -14,7 +14,7 @@ namespace Clock.Services
         public SettingsService(IFontService fontService)
         {
             _fontService = fontService;
-            settingsFilePath = Path.Combine(AppPaths.UserFontFolder, "clockSettings.json");
+            settingsFilePath = Path.Combine(AppPaths.AppDataFolder, "clockSettings.json");
         }
 
         public Point LoadSettings(Point location)
