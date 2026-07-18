@@ -1,34 +1,64 @@
-﻿using System.Drawing.Text;
+﻿using Clock.Helpers;
+using Microsoft.VisualBasic;
+using System.Drawing.Text;
 
 namespace Clock.Services
 {
-    public class FontService
+    public class FontService : IFontService, IDisposable
     {
         private PrivateFontCollection _fonts = new();
         private readonly Dictionary<string, FontFamily> _fontsStored = new();
         private Font? _timeFont;
         private Font? _dateFont;
+        private Color _fontColor = Color.Black;
+
         public FontFamily? SelectedFont { get; private set; }
         public string FontName { get; private set; } = "";
         public string FontPath { get; private set; } = "";
         public string FontFolder { get; private set; } = "";
         public Font? TimeFont => _timeFont;
         public Font? DateFont => _dateFont;
+        public Color FontColor => _fontColor;
         public event EventHandler? FontChanged;
 
         public void LoadFonts()
         {
-            FontFolder = Path.Combine(Application.StartupPath, "Fonts");
-            if (!Directory.Exists(FontFolder))
+            FontFolder = AppPaths.UserFontFolder;
+
+            try
+            {
+                Directory.CreateDirectory(FontFolder);
+            }
+            catch
             {
                 UseFallbackFont();
                 return;
             }
 
-            string[] fontsFoundList = Directory.GetFiles(FontFolder, "*.ttf");
-            if (fontsFoundList.Length <= 0)
+            LoadFontsFromFolder(AppPaths.BundledFontFolder);
+            LoadFontsFromFolder(FontFolder);
+
+            if (_fontsStored.Count == 0)
             {
                 UseFallbackFont();
+                return;
+            }
+
+            var firstFont = _fontsStored.First();
+            ApplySelectedFont(firstFont.Value, firstFont.Key, FontPath);
+            FontChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void LoadFontsFromFolder(string folderPath)
+        {
+            if (!Directory.Exists(folderPath))
+            {
+                return;
+            }
+
+            string[] fontsFoundList = Directory.GetFiles(folderPath, "*.ttf");
+            if (fontsFoundList.Length <= 0)
+            {
                 return;
             }
 
@@ -57,20 +87,9 @@ namespace Clock.Services
                         }
                     }
                 }
-
-                if (_fontsStored.Count == 0)
-                {
-                    UseFallbackFont();
-                    return;
-                }
-
-                var firstFont = _fontsStored.First();
-                ApplySelectedFont(firstFont.Value, firstFont.Key, FontPath);
-                FontChanged?.Invoke(this, EventArgs.Empty);
             }
             catch
             {
-                UseFallbackFont();
             }
         }
 
@@ -78,7 +97,7 @@ namespace Clock.Services
         {
             string fontName = Path.GetFileNameWithoutExtension(path);
 
-            if (!_fontsStored.TryGetValue(fontName, out FontFamily font))
+            if (!_fontsStored.TryGetValue(fontName, out FontFamily? font))
             {
                 _fonts.AddFontFile(path);
 
@@ -88,6 +107,12 @@ namespace Clock.Services
             }
 
             ApplySelectedFont(font, fontName, path);
+            FontChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void ApplyFontColour(Color color)
+        {
+            _fontColor = color;
             FontChanged?.Invoke(this, EventArgs.Empty);
         }
 

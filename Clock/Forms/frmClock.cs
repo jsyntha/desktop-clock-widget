@@ -8,22 +8,19 @@ namespace Clock
     public partial class frmClock : Form
     {
         private readonly WindowDragHelper _dragHelper;
-        private readonly FontService _fontService;
-
-        private string settingsFilePath = Path.Combine(Application.StartupPath, "clockSettings.json");
+        private readonly IFontService _fontService;
+        private readonly SettingsService _settingsService;
 
         private bool settingsOpen = false;
-        public frmClock(FontService fontService)
+        public frmClock(IFontService fontService)
         {
             InitializeComponent();
-
-            _fontService = fontService;
             _dragHelper = new WindowDragHelper(this);
-
+            _fontService = fontService;
+            _settingsService = new SettingsService(_fontService);
             _fontService.FontChanged += FontService_FontChanged;
             _fontService.LoadFonts();
-
-            LoadSettings();
+            Location = _settingsService.LoadSettings(Location);
 
             lblDigitalTime.Font = _fontService.TimeFont;
             lblDate.Font = _fontService.DateFont;
@@ -57,35 +54,9 @@ namespace Clock
             Application.Exit();
         }
 
-        private void LoadSettings()
-        {
-            if (!File.Exists(settingsFilePath)) return;
-
-            string json = File.ReadAllText(settingsFilePath);
-
-            ClockSettings? settings = JsonSerializer.Deserialize<ClockSettings>(json);
-
-            if (settings == null)
-                return;
-
-            Location = new Point(settings.X, settings.Y);
-        }
-
-        private void SaveSettings()
-        {
-            ClockSettings settings = new ClockSettings
-            {
-                X = Location.X,
-                Y = Location.Y
-            };
-
-            string json = JsonSerializer.Serialize(settings);
-            File.WriteAllText(settingsFilePath, json);
-        }
-
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            SaveSettings();
+            _settingsService.SaveSettings(Location);
             _fontService.FontChanged -= FontService_FontChanged;
             _fontService.Dispose();
             notifyIcon1?.Visible = false;
@@ -117,6 +88,8 @@ namespace Clock
         {
             lblDigitalTime.Font = _fontService.TimeFont;
             lblDate.Font = _fontService.DateFont;
+            lblDigitalTime.ForeColor = _fontService.FontColor;
+            lblDate.ForeColor = _fontService.FontColor;
         }
     }
 }

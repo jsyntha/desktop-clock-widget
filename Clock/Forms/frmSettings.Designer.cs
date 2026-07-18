@@ -35,6 +35,9 @@
             lblTypographyPreview = new Label();
             txtTypographyPreview = new TextBox();
             grpSettingsFooter = new GroupBox();
+            btnApplySettings = new Button();
+            btnCancelSettings = new Button();
+            btnChangeFontColour = new Button();
             picFolderIcon = new PictureBox();
             btnOpenFontFolder = new Button();
             grpUpdateFont = new GroupBox();
@@ -47,6 +50,7 @@
             txtActiveFont = new TextBox();
             txtActivePath = new TextBox();
             lblActivePath = new Label();
+            cldSettings = new ColorDialog();
             pnlSettings.SuspendLayout();
             grpSettingsFooter.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picFolderIcon).BeginInit();
@@ -111,6 +115,9 @@
             // 
             // grpSettingsFooter
             // 
+            grpSettingsFooter.Controls.Add(btnApplySettings);
+            grpSettingsFooter.Controls.Add(btnCancelSettings);
+            grpSettingsFooter.Controls.Add(btnChangeFontColour);
             grpSettingsFooter.Controls.Add(picFolderIcon);
             grpSettingsFooter.Controls.Add(btnOpenFontFolder);
             grpSettingsFooter.Location = new Point(0, 310);
@@ -118,6 +125,36 @@
             grpSettingsFooter.Size = new Size(560, 40);
             grpSettingsFooter.TabIndex = 12;
             grpSettingsFooter.TabStop = false;
+            // 
+            // btnApplySettings
+            // 
+            btnApplySettings.Location = new Point(493, 11);
+            btnApplySettings.Name = "btnApplySettings";
+            btnApplySettings.Size = new Size(60, 23);
+            btnApplySettings.TabIndex = 15;
+            btnApplySettings.Text = "Apply";
+            btnApplySettings.UseVisualStyleBackColor = true;
+            btnApplySettings.Click += btnApplySettings_Click;
+            // 
+            // btnCancelSettings
+            // 
+            btnCancelSettings.Location = new Point(427, 11);
+            btnCancelSettings.Name = "btnCancelSettings";
+            btnCancelSettings.Size = new Size(60, 23);
+            btnCancelSettings.TabIndex = 11;
+            btnCancelSettings.Text = "Cancel";
+            btnCancelSettings.UseVisualStyleBackColor = true;
+            btnCancelSettings.Click += btnCancelSettings_Click;
+            // 
+            // btnChangeFontColour
+            // 
+            btnChangeFontColour.Location = new Point(296, 11);
+            btnChangeFontColour.Name = "btnChangeFontColour";
+            btnChangeFontColour.Size = new Size(125, 23);
+            btnChangeFontColour.TabIndex = 11;
+            btnChangeFontColour.Text = "Change Font Colour";
+            btnChangeFontColour.UseVisualStyleBackColor = true;
+            btnChangeFontColour.Click += btnChangeFontColour_Click;
             // 
             // picFolderIcon
             // 
@@ -254,6 +291,11 @@
             lblActivePath.TabIndex = 3;
             lblActivePath.Text = "Current path:";
             // 
+            // cldSettings
+            // 
+            cldSettings.AllowFullOpen = false;
+            cldSettings.AnyColor = true;
+            // 
             // frmSettings
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -296,5 +338,9 @@
         private Label lblTypographyPreview;
         private TextBox txtTypographyPreview;
         private Label lblTypographyExampleChars;
+        private Button btnChangeFontColour;
+        private ColorDialog cldSettings;
+        private Button btnApplySettings;
+        private Button btnCancelSettings;
     }
 }
