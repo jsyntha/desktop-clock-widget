@@ -5,11 +5,11 @@ namespace Clock
 {
     public partial class frmSettings : Form
     {
-        private readonly FontService _fontService;
+        private readonly IFontService _fontService;
         private Color _previewFontColor;
         private Color _previousFontColor;
 
-        public frmSettings(FontService fontService)
+        public frmSettings(IFontService fontService)
         {
             InitializeComponent();
             _fontService = fontService;

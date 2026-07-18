@@ -4,21 +4,13 @@ using System.Drawing.Text;
 
 namespace Clock.Services
 {
-    public class FontService
+    public class FontService : IFontService, IDisposable
     {
         private PrivateFontCollection _fonts = new();
         private readonly Dictionary<string, FontFamily> _fontsStored = new();
         private Font? _timeFont;
         private Font? _dateFont;
         private Color _fontColor = Color.Black;
-        //private Color _previousFontColor;
-
-        /*
-        public FontService()
-        {
-            userFontFolder = Path.Combine(_appDataRoot, "Fonts");
-            bundledFontFolder = Path.Combine(Application.StartupPath, "Fonts");
-        }*/
 
         public FontFamily? SelectedFont { get; private set; }
         public string FontName { get; private set; } = "";
@@ -27,7 +19,6 @@ namespace Clock.Services
         public Font? TimeFont => _timeFont;
         public Font? DateFont => _dateFont;
         public Color FontColor => _fontColor;
-        //public Color PreviouisFontColor => _previousFontColor;
         public event EventHandler? FontChanged;
 
         public void LoadFonts()

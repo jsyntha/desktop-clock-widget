@@ -1,17 +1,17 @@
 ﻿using Clock.Helpers;
 using Clock.Models;
+using System.Text.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.Json;
 
 namespace Clock.Services
 {
-    public class SettingsService
+    public class SettingsService : ISettingsService
     {
         private readonly string settingsFilePath;
-        private readonly FontService _fontService;
-        public SettingsService(FontService fontService)
+        private readonly IFontService _fontService;
+        public SettingsService(IFontService fontService)
         {
             _fontService = fontService;
             settingsFilePath = Path.Combine(AppPaths.UserFontFolder, "clockSettings.json");

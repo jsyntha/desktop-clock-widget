@@ -8,11 +8,11 @@ namespace Clock
     public partial class frmClock : Form
     {
         private readonly WindowDragHelper _dragHelper;
-        private readonly FontService _fontService;
+        private readonly IFontService _fontService;
         private readonly SettingsService _settingsService;
 
         private bool settingsOpen = false;
-        public frmClock(FontService fontService)
+        public frmClock(IFontService fontService)
         {
             InitializeComponent();
             _dragHelper = new WindowDragHelper(this);
