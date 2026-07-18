@@ -27,8 +27,8 @@ The font file will then be copied alongside the application when built.
 
 ## Roadmap
 ### Customisation
-- [ ] Change clock font from the GUI
-- [ ] Change clock colours from the GUI
+- [x] Change clock font from the GUI
+- [x] Change clock colours from the GUI
 - [ ] Adjustable clock sizing
 - [ ] Resizable widget window
 - [ ] Theme presets
@@ -39,9 +39,9 @@ The font file will then be copied alongside the application when built.
 - [ ] Improve desktop widget behaviour
 
 ### User Experience
-- [ ] Improved system tray controls (In Progress)
-- [ ] Settings menu (In Progress)
-- [ ] Better configuration handling (In Progress)
+- [x] Improved system tray controls
+- [x] Settings menu
+- [x] Better configuration handling
 - [ ] Additional display options
 
 ## Built With
