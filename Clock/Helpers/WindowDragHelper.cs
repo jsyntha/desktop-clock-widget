@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Clock.Helpers
+﻿namespace Clock.Helpers
 {
     internal class WindowDragHelper
     {

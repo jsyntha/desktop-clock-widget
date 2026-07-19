@@ -1,4 +1,5 @@
-﻿using Clock.Services;
+﻿using Clock.Helpers;
+using Clock.Services;
 using System.Diagnostics;
 
 namespace Clock
@@ -6,13 +7,17 @@ namespace Clock
     public partial class frmSettings : Form
     {
         private readonly IFontService _fontService;
+        private readonly frmClock _parentForm;
+        private readonly FormTransparencyHelper _transparencyHelper;
         private Color _previewFontColor;
         private Color _previousFontColor;
 
-        public frmSettings(IFontService fontService)
+        public frmSettings(IFontService fontService, frmClock parentForm)
         {
             InitializeComponent();
             _fontService = fontService;
+            _parentForm = parentForm;
+            _transparencyHelper = new FormTransparencyHelper(parentForm);
             _previousFontColor = _fontService.FontColor;
             _previewFontColor = _previousFontColor;
 
@@ -123,6 +128,7 @@ namespace Clock
         private void btnApplySettings_Click(object sender, EventArgs e)
         {
             _fontService.ApplyFontColour(_previewFontColor);
+            _transparencyHelper.CheckAndSetTransparency(_previewFontColor);
             _previousFontColor = _previewFontColor;
         }
 

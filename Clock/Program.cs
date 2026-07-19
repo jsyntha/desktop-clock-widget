@@ -9,13 +9,17 @@ namespace Clock
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
+
+        private static Mutex? mutexName;
+
         [STAThread]
         static void Main()
         {
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
+            mutexName = new Mutex(true, "DesktopClockWidgetMutex", out bool createdNew);
+            if (!createdNew) { MessageBox.Show("Another instance of the program is already running."); return; }
             ApplicationConfiguration.Initialize();
-            //FontService fontService = new();
             var services = new ServiceCollection();
             services.AddSingleton<IFontService, FontService>();
             services.AddSingleton<ISettingsService, SettingsService>();
@@ -24,7 +28,6 @@ namespace Clock
             services.AddTransient<frmSettings>();
 
             var serviceProvider = services.BuildServiceProvider();
-            //Application.Run(new frmClock(fontService));
             Application.Run(serviceProvider.GetRequiredService<frmClock>());
         }
     }

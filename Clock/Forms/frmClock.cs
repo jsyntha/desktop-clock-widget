@@ -1,5 +1,3 @@
-using System.Text.Json;
-using Clock.Models;
 using Clock.Helpers;
 using Clock.Services;
 
@@ -9,18 +7,22 @@ namespace Clock
     {
         private readonly WindowDragHelper _dragHelper;
         private readonly IFontService _fontService;
-        private readonly SettingsService _settingsService;
+        private readonly ISettingsService _settingsService;
+        private readonly FormTransparencyHelper _transparencyHelper;
 
         private bool settingsOpen = false;
-        public frmClock(IFontService fontService)
+        public frmClock(IFontService fontService, ISettingsService settingsService)
         {
             InitializeComponent();
             _dragHelper = new WindowDragHelper(this);
             _fontService = fontService;
-            _settingsService = new SettingsService(_fontService);
+            _settingsService = settingsService;
+            _transparencyHelper = new FormTransparencyHelper(this);
+
             _fontService.FontChanged += FontService_FontChanged;
             _fontService.LoadFonts();
             Location = _settingsService.LoadSettings(Location);
+            _transparencyHelper.CheckAndSetTransparency(_fontService.FontColor);
 
             lblDigitalTime.Font = _fontService.TimeFont;
             lblDate.Font = _fontService.DateFont;
@@ -73,7 +75,7 @@ namespace Clock
 
             try
             {
-                using (frmSettings settingsForm = new frmSettings(_fontService))
+                using (frmSettings settingsForm = new frmSettings(_fontService, this))
                 {
                     settingsForm.ShowDialog(this);
                 }
