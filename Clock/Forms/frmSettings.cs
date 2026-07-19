@@ -8,7 +8,7 @@ namespace Clock
     {
         private readonly IFontService _fontService;
         private readonly frmClock _parentForm;
-        private readonly FormTransparencyHelper _transparencyHelper;
+        private readonly FormColourHelper _transparencyHelper;
         private Color _previewFontColor;
         private Color _previousFontColor;
 
@@ -17,7 +17,7 @@ namespace Clock
             InitializeComponent();
             _fontService = fontService;
             _parentForm = parentForm;
-            _transparencyHelper = new FormTransparencyHelper(parentForm);
+            _transparencyHelper = new FormColourHelper(parentForm);
             _previousFontColor = _fontService.FontColor;
             _previewFontColor = _previousFontColor;
 
@@ -33,6 +33,7 @@ namespace Clock
 
             ApplyPreviewFont(lblTypographyExampleSentence, font, _fontService.FontColor);
             ApplyPreviewFont(lblTypographyExampleChars, font, _fontService.FontColor);
+            UpdateTypographyPreviewBackground(_fontService.FontColor);
         }
 
         private void btnBrowse_Click(object sender, EventArgs e)
@@ -57,6 +58,7 @@ namespace Clock
 
                     ApplyPreviewFont(lblTypographyExampleSentence, _fontService.SelectedFont ?? FontFamily.GenericSansSerif, _fontService.FontColor);
                     ApplyPreviewFont(lblTypographyExampleChars, _fontService.SelectedFont ?? FontFamily.GenericSansSerif, _fontService.FontColor);
+                    UpdateTypographyPreviewBackground(_fontService.FontColor);
                 }
             }
         }
@@ -90,6 +92,12 @@ namespace Clock
             Font testFont;
 
             control.ForeColor = fontColor;
+            // typography background box
+            txtTypographyPreview.BackColor = FormColourHelper.GetContrastingBackground(fontColor);
+            // typography lbl
+            lblTypographyPreview.BackColor = FormColourHelper.GetContrastingBackground(fontColor);
+            // typography example sentence + example chars
+            control.BackColor = FormColourHelper.GetContrastingBackground(fontColor);
 
             while (size > 1)
             {
@@ -110,6 +118,11 @@ namespace Clock
             control.Font = new Font(previewFontFamily, 1f, control.Font.Style);
         }
 
+        private void UpdateTypographyPreviewBackground(Color fontColor)
+        {
+            lblTypographyPreview.ForeColor = _previewFontColor;
+        }
+
         private void btnChangeFontColour_Click(object sender, EventArgs e)
         {
             using ColorDialog dialog = new();
@@ -122,13 +135,14 @@ namespace Clock
                 _previewFontColor = dialog.Color;
                 ApplyPreviewFont(lblTypographyExampleSentence, _fontService.SelectedFont ?? FontFamily.GenericSansSerif, _previewFontColor);
                 ApplyPreviewFont(lblTypographyExampleChars, _fontService.SelectedFont ?? FontFamily.GenericSansSerif, _previewFontColor);
+                UpdateTypographyPreviewBackground(_fontService.FontColor);
             }
         }
 
         private void btnApplySettings_Click(object sender, EventArgs e)
         {
             _fontService.ApplyFontColour(_previewFontColor);
-            _transparencyHelper.CheckAndSetTransparency(_previewFontColor);
+            _transparencyHelper.CheckAndSetTransparencyKey(_previewFontColor);
             _previousFontColor = _previewFontColor;
         }
 
@@ -142,6 +156,7 @@ namespace Clock
             _previewFontColor = _previousFontColor;
             ApplyPreviewFont(lblTypographyExampleSentence, _fontService.SelectedFont ?? FontFamily.GenericSansSerif, _previewFontColor);
             ApplyPreviewFont(lblTypographyExampleChars, _fontService.SelectedFont ?? FontFamily.GenericSansSerif, _previewFontColor);
+            UpdateTypographyPreviewBackground(_fontService.FontColor);
         }
     }
 }

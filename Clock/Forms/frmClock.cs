@@ -8,7 +8,7 @@ namespace Clock
         private readonly WindowDragHelper _dragHelper;
         private readonly IFontService _fontService;
         private readonly ISettingsService _settingsService;
-        private readonly FormTransparencyHelper _transparencyHelper;
+        private readonly FormColourHelper _transparencyHelper;
 
         private bool settingsOpen = false;
         public frmClock(IFontService fontService, ISettingsService settingsService)
@@ -17,12 +17,12 @@ namespace Clock
             _dragHelper = new WindowDragHelper(this);
             _fontService = fontService;
             _settingsService = settingsService;
-            _transparencyHelper = new FormTransparencyHelper(this);
+            _transparencyHelper = new FormColourHelper(this);
 
             _fontService.FontChanged += FontService_FontChanged;
             _fontService.LoadFonts();
             Location = _settingsService.LoadSettings(Location);
-            _transparencyHelper.CheckAndSetTransparency(_fontService.FontColor);
+            _transparencyHelper.CheckAndSetTransparencyKey(_fontService.FontColor);
 
             lblDigitalTime.Font = _fontService.TimeFont;
             lblDate.Font = _fontService.DateFont;
